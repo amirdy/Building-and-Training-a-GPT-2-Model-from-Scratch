@@ -1,9 +1,9 @@
 import torch
 import torch.nn as nn
 import tiktoken
-from modules.gpt import GPT
-from modules.dataset import Dataset
-from modules.data_module import DataModule
+from models.gpt import GPT
+from datasets.dataset import Dataset
+from datasets.data_module import DataModule
 from config import GPTConfig, TrainingConfig
 import os
 import time

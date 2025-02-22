@@ -1,8 +1,8 @@
 import torch
 import torch.nn as nn
-from modules.layer_norm import LayerNorm
-from modules.multi_head_self_attention import MHA
-from modules.feed_forward import FeedForward
+from models.layer_norm import LayerNorm
+from models.multi_head_self_attention import MHA
+from models.feed_forward import FeedForward
 
 class TrnasformerBlock(nn.Module):
   def __init__(self, config):

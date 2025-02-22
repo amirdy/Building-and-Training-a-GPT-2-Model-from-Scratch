@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from modules.dataset import Dataset
+from datasets.dataset import Dataset
 import os
 import urllib.request
 import tiktoken
