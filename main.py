@@ -1,14 +1,8 @@
 import torch
-import torch.nn as nn
-import tiktoken
 from models.gpt import GPT
-from datasets.dataset import Dataset
 from datasets.data_module import DataModule
 from config import GPTConfig, TrainingConfig
-import os
-import time
-import urllib.request
-from modules.trainer import Trainer
+from trainer import Trainer
 
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
