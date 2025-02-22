@@ -1,0 +1,25 @@
+# config.yaml
+
+model:
+  name: "CustomCNN"
+  input_size: 128
+  hidden_layers: [64, 128, 256]
+  output_size: 10
+
+training:
+  batch_size: 32
+  epochs: 50
+  learning_rate: 0.001
+  optimizer: "adam"
+  scheduler:
+    step_size: 10
+    gamma: 0.1
+
+data:
+  train_path: "./data/train"
+  val_path: "./data/validation"
+  test_path: "./data/test"
+
+logging:
+  use_wandb: true
+  project_name: "neural-net-experiment"
