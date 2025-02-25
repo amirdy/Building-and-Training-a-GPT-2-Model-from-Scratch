@@ -1,6 +1,8 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import math
+from pathlib import Path  
 
 class Trainer:
     def __init__(self, tokenizer, train_dataloader, val_dataloader, model, config,  device):
@@ -10,28 +12,44 @@ class Trainer:
         self.model = model
         self.config = config
         self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = self.config_optimizer()
+        self.optimizer = self.configure_optimizer()
         self.device = device
         self.best_val_loss = float('inf')
         self.best_epoch = 0
         self.train_losses = []
         self.val_losses = []
+        self.checkpoint_dir = Path(self.config.save_path) / 'ckpt'
+        try:
+            self.checkpoint_dir.mkdir(parents=True)
+            print(f"Checkpoint directory is ready at: {self.checkpoint_dir}")
 
-    def train_epoch(self):
+        except FileExistsError:
+            print(f"The checkpoint directory ({self.checkpoint_dir}) already exists.")
+
+    def train_epoch(self, epoch):
         """ Train epoch """
         losses= []
         for batch, (X,y) in enumerate(self.train_dataloader):
             X, y = X.to(self.device), y.to(self.device) 
-            # X: (bath_size, seq_length)
-            # y: (bath_size, seq_length)
+            # X: (batch_size, seq_length)
+            # y: (batch_size, seq_length)
             
+            # Forward pass
             pred = self.model(X) # (batch_size, seq_length, vocab_size)
             pred = pred.flatten(0,1) # (batch_size x seq_length, vocab_size)
             y = y.flatten(0,1) # (batch_size x seq_length)
-
+    
+            # Calculate loss
             loss = self.criterion(pred, y)
             losses.append(loss.item())
+ 
+            # Learning rate update
+            current_step = (epoch - 1) * len(self.train_dataloader)  +  (batch + 1)
+            lr = self.get_lr(current_step)
+            for param_group in self.optimizer.param_groups:
+                param_group['lr'] = lr
 
+            # Backward pass and optimization
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
@@ -68,39 +86,50 @@ class Trainer:
         if val_loss < self.best_val_loss:
                 self.best_val_loss = val_loss
                 self.best_epoch = epoch
-                torch.save(self.model.state_dict(), self.config.save_path)
+                model_filename = self.checkpoint_dir / f'best_model_epoch{epoch}.pth'
+                torch.save(self.model.state_dict(), model_filename)
 
     def print_sample_output(self):
         """ Print sample output"""
         sample_context = "Every effort moves you"
         tokens = self.tokenizer.encode(sample_context, allowed_special={'<|endoftext|>'}) # list of indexes [3, 2, 1, ... ]
 
-        for i in range(self.max_new_token):
+        for i in range(self.config.max_new_token):
             tokens_tensor = torch.tensor(tokens).unsqueeze(0).to(self.device)
-            
             with torch.no_grad():
+                # Generate logits from the model for the current token sequence
                 logits = self.model(tokens_tensor)
-
-            last_seq_logits = logits[0,-1,:] # torch.Size([vocab_size])
-            _, top_k_indices = torch.topk(last_seq_logits, self.config.k_top)
-            indices = torch.arange(len(last_seq_logits))
-            non_top_k_indices = list(set(indices.tolist()) - set(top_k_indices.tolist()))
-            last_seq_logits[non_top_k_indices] = float('-inf')
-
-            last_seq_logits = last_seq_logits / self.config.temperature
-            probs = torch.softmax(last_seq_logits, dim = 0)
-            next_id = torch.multinomial(probs, num_samples=1)
-            tokens = tokens + [next_id.item()]
+                # Extract logits corresponding to the last token in the sequence (shape: [vocab_size])
+                last_seq_logits = logits[0, -1, :]
+                # Select the indices of the top-k highest logits
+                _, top_k_indices = torch.topk(last_seq_logits, self.config.k_top)
+                # Create a boolean mask where top-k logits are True, others are False
+                mask = torch.zeros_like(last_seq_logits, dtype=torch.bool)
+                mask[top_k_indices] = True
+                # Set logits outside the top-k to negative infinity to exclude them from sampling
+                last_seq_logits[~mask] = float('-inf')
+                # Scale logits using temperature to control randomness in sampling
+                scaled_logits = last_seq_logits / self.config.temperature
+                # Convert scaled logits to probabilities using softmax
+                probs = torch.softmax(scaled_logits, dim=0)
+                # Sample the next token based on the probability distribution
+                next_token = torch.multinomial(probs, num_samples=1)
+                # Append the sampled token to the sequence
+                tokens = tokens + [next_token.item()]
 
         decoded_text = self.tokenizer.decode(tokens) .replace("\n", " ")
         
-        print(f'({decoded_text})')
+        print(f'> ({decoded_text})')
     
     def train(self):
         """ Train """
-        for epoch in range(1, self.epochs + 1):
+
+        num_steps = len(self.train_dataloader)  # num_steps per epoch
+        epochs = self.config.max_steps // num_steps
+        print(f' Number of epochs is {epochs} which contains {epochs * (num_steps)} steps.')
+        for epoch in range(1, epochs + 1):
             self.model.train()
-            train_loss = self.train_epoch()
+            train_loss = self.train_epoch(epoch)
             self.model.eval()
             val_loss = self.validate_epoch()
 
@@ -108,7 +137,32 @@ class Trainer:
             self.save_checkpoint(epoch, val_loss)
             self.print_sample_output()
 
-    def config_optimizer(self):
-        """ Config optimizer """
-        optmizer = torch.optim.AdamW(self.model.parameters(), lr = self.config.learning_rate, weight_decay = self.config.weight_decay)
+    def configure_optimizer(self):
+        """ Configure optimizer """
+                
+        # Get all trainable parameters
+        param_dict = {name: p for name, p in self.model.named_parameters() if  p.requires_grad}
+        # Apply weight decay to all weights except biases and batch norm layers
+        param_groups = [
+            {'params': [p for name, p in param_dict if p.dim()  ], 'weight_decay': self.config.weight_decay},  
+            {'params': [p for name, p in param_dict if p.dim() == 0 or p.requires_grad], 'weight_decay': 0.0}  
+        ]
+
+        optmizer = torch.optim.AdamW(param_groups, lr = self.config.learning_rate, betas=(0.9, 0.95), eps=1e-8)
         return optmizer
+    
+    def get_lr(self, current_step):
+        """ Get the learning rate"""
+
+        # Warm up
+        if current_step < self.config.warmup_steps:
+            return   ((current_step + 1) / self.config.warmup_steps) * self.config.max_lr
+        # if the step > max_steps then keep the min learning rate 
+        elif current_step > self.config.max_steps:
+            return self.config.min_lr
+        # use cosine decay down to min learning rate
+        decay_ratio = (current_step - self.config.warmup_steps)  / (self.config.max_steps - self.config.warmup_steps)
+        coeff = 0.5 * (1 + math.cos(math.pi * decay_ratio))
+
+        return self.config.min_lr + coeff * (self.config.max_lr - self.config.min_lr)
+    

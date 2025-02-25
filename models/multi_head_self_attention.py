@@ -43,7 +43,7 @@ class MHA(nn.Module):
         mask = torch.tril(torch.ones((seq_length, seq_length))).to(attn_scores.device)
         
         attn_scores = mask * attn_scores
-        attn_scores[ attn_scores== 0] = -torch.inf
+        attn_scores.masked_fill_(attn_scores == 0, float('-inf')) # equal to attn_scores[ attn_scores== 0] = -torch.inf
 
 
       attn_weights  = torch.softmax(attn_scores / torch.sqrt(d_k), dim = -1)

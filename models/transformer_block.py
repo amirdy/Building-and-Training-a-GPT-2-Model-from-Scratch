@@ -1,10 +1,9 @@
-import torch
 import torch.nn as nn
 from models.layer_norm import LayerNorm
 from models.multi_head_self_attention import MHA
 from models.feed_forward import FeedForward
 
-class TrnasformerBlock(nn.Module):
+class TransformerBlock(nn.Module):
   def __init__(self, config):
     super().__init__()
     self.drop = nn.Dropout(config.drop_rate)
@@ -25,7 +24,7 @@ class TrnasformerBlock(nn.Module):
     output = output + shortcut
 
     shortcut = output
-    output = self.layer_nomalization_2(shortcut) # (B, seq_length, embed_dim)
+    output = self.layer_nomalization_2(shortcut) # (batch_size, seq_length, embed_dim)
     output = self.feed_forward(output) # (batch_size, seq_length, embed_dim)
     output = self.drop(output)
     output = output + shortcut
