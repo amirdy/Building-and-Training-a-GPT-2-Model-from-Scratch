@@ -9,7 +9,7 @@ class GPTConfig:
     n_layers = 12         # Number of layers
     drop_rate = 0.1       # Dropout rate
     qkv_bias = False      # Query-key-value bias
-    weight_tying = True
+    weight_tying = False
 
 @dataclass
 class TrainingConfig:

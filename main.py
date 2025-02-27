@@ -6,7 +6,7 @@ from trainer import Trainer
 import time
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+device = 'cpu'
 
 gpt_config = GPTConfig()
 training_config = TrainingConfig()
@@ -29,9 +29,10 @@ trainer = Trainer(
     model = model,
     config = training_config,
     device = device,
+    grad_accum_steps = 4
 )
-# start_time = time.time()
-# trainer.train()
+start_time = time.time()
+trainer.train()
 # end_time = time.time()
 # training_time_minutes = (end_time - start_time)/60
 # print(f'\n Training completed in {training_time_minutes:.2f} minutes.')
@@ -57,9 +58,9 @@ trainer = Trainer(
 ### similiray betwee ntoken, nearby token embeddigns . an vice versa   we expect this     weight tying
 ### 1.11.54
 
-### 1.14.27 initialization of weights and bias 
+######################### 1.14.27 initialization of weights and bias 
 
-### 1.19.0 residula probelm
+######################### 1.19.0 residula probelm
 
 ## 1.34.15    torch sync 
 ## 1.36.40     token/sec
@@ -72,11 +73,33 @@ trainer = Trainer(
 #### 5. uge number    4 percenrt
 
 
-### gpt 3 :   4.1.25 adamw
-### 4.1.26 grad clip
-#### 2.4.20 schedular
-####### 2.29 weight decay
-######## 2.38 batch size grad accmulation
-
+######################### gpt 3 :   2.20 adamw
+######################### 2.20 grad clip
+######################### 2.4.20 schedular
+######################### 2.29 weight decay
+######## 2.38  grad accmulation
+######## 2.37 batch size
 
 ######## 2.33   fused adam
+
+
+
+
+
+
+
+
+
+
+
+'''
+My lessons:
+1. before wiegh tying, the training started from 9 but after weight tying it started from 114 and did no get to the best
+brefore. however, initilizaion o the mbed with normal, solve this problem. it seems that the FC layers should not be initialize with
+uniform distritubution (which embedding layers init with).
+ In fact I have a unifroms dist from -0.3 to 0.3. which has the std of 1.2
+ xavier = mean = 0  std = 1/(sqrt(n))    n:inoming features
+
+
+
+'''
