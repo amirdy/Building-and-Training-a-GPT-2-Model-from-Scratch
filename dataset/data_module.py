@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader
-from datasets.dataset import Dataset
+from dataset.dataset import Dataset
 import os
 import urllib.request
 import tiktoken
@@ -21,7 +21,7 @@ class DataModule():
 
         self.tokenizer = tiktoken.get_encoding("gpt2")
         split_idx = int(0.9 * len(text_data))
-        
+
         training_set = text_data[0 : split_idx]
         validation_set = text_data[split_idx : ]
         training_set_tokens = self.tokenizer.encode(training_set, allowed_special={"<|endoftext|>"})

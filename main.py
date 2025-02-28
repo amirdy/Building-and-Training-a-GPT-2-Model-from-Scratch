@@ -1,6 +1,6 @@
 import torch
 from models.gpt import GPT
-from datasets.data_module import DataModule
+from dataset.data_module import DataModule
 from config import GPTConfig, TrainingConfig
 from trainer import Trainer
 import time
