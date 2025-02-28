@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.nn import functional as F
 
 class MHA(nn.Module):
   def __init__(self, embed_dim, num_heads, drop_rate, mask = False):
@@ -49,6 +50,9 @@ class MHA(nn.Module):
       attn_weights  = torch.softmax(attn_scores / torch.sqrt(d_k), dim = -1)
       attn_weights = self.drop(attn_weights)
       output = attn_weights@V # (batch_size, num_heads, seq_length, head_dim) 
+
+      # output = F.scaled_dot_product_attention(Q, K, V, is_causal=True) # flash attention
+
       output = output.permute(0, 2, 1, 3) # (batch_size, seq_length, num_heads, head_dim) 
       output = output.contiguous().view(batch_size, seq_length, self.embed_dim) # (batch_size, seq_length, embed_dim) 
       output = self.out_proj(output)  # (batch_size, seq_length, embed_dim) 

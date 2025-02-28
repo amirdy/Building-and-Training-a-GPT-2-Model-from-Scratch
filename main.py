@@ -13,8 +13,8 @@ training_config = TrainingConfig()
 
 
 dm = DataModule(training_config.batch_size, gpt_config.context_length)
-train_dataloader = iter(dm.train_dataloader())
-val_dataloader = iter(dm.val_dataloader())
+train_dataloader = dm.train_dataloader()
+val_dataloader = dm.val_dataloader()
 
 
 
@@ -87,10 +87,16 @@ trainer.train()
 
 
 
+### 2^19 = 542,288 tokens per step 
+### dataset: 10 Bilion tokens 
+### max_step = 10e9 / 2e19 = 19073 steps
+### in gpt 3 warm up over 375e6 tokens so 375e6/2e19  steps for warm up = 715 
 
 
+# batch size should be 542,288 which is 2e19, ~0.5M in nmber of tokes
 
 
+#B = 16 T = 1024 so grad_acc = 32
 
 '''
 My lessons:

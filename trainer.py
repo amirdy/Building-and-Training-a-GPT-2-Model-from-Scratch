@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import time
 import numpy as np
 import math
 from pathlib import Path  
@@ -8,6 +9,7 @@ class Trainer:
     def __init__(self, tokenizer, train_dataloader, val_dataloader, model, config,  device, grad_accum_steps):
         self.tokenizer = tokenizer
         self.train_dataloader = train_dataloader
+        self.iter_train_dataloader = iter(train_dataloader)
         self.val_dataloader = val_dataloader
         self.model = model
         self.config = config
@@ -28,11 +30,12 @@ class Trainer:
             print(f"The checkpoint directory ({self.checkpoint_dir}) already exists.")
     
     def get_batch(self):
-      try:
-        return next(self.train_dataloader)
-      except  StopIteration:
-        self.train_dataloader = iter(self.train_dataloader)
-        return next(self.train_dataloader)
+      try: 
+          return next(self.iter_train_dataloader)
+      except StopIteration:
+          #print("Dataloader exhausted, resetting...")
+          self.iter_train_dataloader = iter(self.train_dataloader)  # Reinitialize the iterator
+          return next(self.iter_train_dataloader)  # Try again with the new iterator
 
     def train_step(self, current_step):
         """ Train step """
@@ -55,7 +58,9 @@ class Trainer:
             loss = self.criterion(pred, y)
             loss = loss / self.grad_accum_steps
             loss_accum += loss.item()
+            loss.backward()
 
+        
         # import code; code.interact(local=dict(globals(), **locals()))
         norm =  torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
  
@@ -65,7 +70,8 @@ class Trainer:
                 param_group['lr'] = lr
 
         self.optimizer.step()
-        
+        # self.train_losses.append(loss_accum)
+
         return loss_accum
 
 
@@ -83,15 +89,16 @@ class Trainer:
             y = y.flatten(0,1) # (batch_size x seq_length)
             loss = self.criterion(pred, y)
             losses.append(loss.item())
-    
-        return np.mean(losses)
+        
+        val_loss = np.mean(losses)
+        # self.val_losses.append(val_loss)
+        return val_loss
 
 
-    def log_results(self, step, train_loss, val_loss):
+    def log_results(self, step, train_loss, val_loss, training_time):
         """ Log results """
-        self.train_losses.append(train_loss)
-        self.val_losses.append(val_loss)
-        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f}')
+
+        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f} | step_time {training_time*1000:.2f} ms')
 
     def save_checkpoint(self, step, val_loss):
         """ Save checkpoint """
@@ -137,12 +144,16 @@ class Trainer:
         """ Train """
 
         for step in range(self.config.max_steps):
+            start_time = time.time()
             self.model.train()
             train_loss = self.train_step(step)
+            end_time = time.time()
+            training_time = (end_time - start_time)
+
             if step % 250 == 0:
                 self.model.eval()
                 val_loss = self.evaluate()
-                self.log_results(step, train_loss, val_loss)
+                self.log_results(step, train_loss, val_loss, training_time)
                 self.save_checkpoint(step, val_loss)
                 self.print_sample_output()
 
