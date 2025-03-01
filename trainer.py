@@ -72,7 +72,7 @@ class Trainer:
         self.optimizer.step()
         # self.train_losses.append(loss_accum)
 
-        return loss_accum
+        return loss_accum, lr
 
 
     def evaluate(self):
@@ -95,10 +95,10 @@ class Trainer:
         return val_loss
 
 
-    def log_results(self, step, train_loss, val_loss, training_time):
+    def log_results(self, step, train_loss, val_loss, training_time, lr):
         """ Log results """
 
-        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f} | step_time {training_time*1000:.2f} ms')
+        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f} | step_time {training_time:.2f} s | lr {lr:.4f}')
 
     def save_checkpoint(self, step, val_loss):
         """ Save checkpoint """
@@ -146,14 +146,13 @@ class Trainer:
         for step in range(self.config.max_steps):
             start_time = time.time()
             self.model.train()
-            train_loss = self.train_step(step)
-            end_time = time.time()
-            training_time = (end_time - start_time)
-
-            if step % 250 == 0:
+            train_loss, lr = self.train_step(step)
+            if step % 1 == 0:
                 self.model.eval()
                 val_loss = self.evaluate()
-                self.log_results(step, train_loss, val_loss, training_time)
+                end_time = time.time()
+                training_time = (end_time - start_time)
+                self.log_results(step, train_loss, val_loss, training_time, lr)
                 self.save_checkpoint(step, val_loss)
                 self.print_sample_output()
 
