@@ -36,9 +36,13 @@ class MHA(nn.Module):
       V = V.permute(0, 2, 1, 3)  # (batch_size, num_heads, seq_length, head_dim)
 
       d_k = torch.tensor(Q.shape[-1], dtype = torch.float32)
+      
 
-      attn_scores = Q@(K.transpose(2,3))  # K.transpose(2,3) : (batch_size, num_heads, seq_length, head_dim) 
-      ##  attn_scores: : (batch_size, num_heads, seq_length, seq_length) 
+      ################### Uncomment it if you want to yse Regular Attention ###################
+      '''
+      attn_scores = Q@(K.transpose(2,3))  
+      # K.transpose(2,3) : (batch_size, num_heads, seq_length, head_dim) 
+      #  attn_scores: : (batch_size, num_heads, seq_length, seq_length) 
 
       if self.masked:
         mask = torch.tril(torch.ones((seq_length, seq_length))).to(attn_scores.device)
@@ -50,8 +54,9 @@ class MHA(nn.Module):
       attn_weights  = torch.softmax(attn_scores / torch.sqrt(d_k), dim = -1)
       attn_weights = self.drop(attn_weights)
       output = attn_weights@V # (batch_size, num_heads, seq_length, head_dim) 
+      '''
 
-      # output = F.scaled_dot_product_attention(Q, K, V, is_causal=True) # flash attention
+      output = F.scaled_dot_product_attention(Q, K, V, is_causal=True) # flash attention
 
       output = output.permute(0, 2, 1, 3) # (batch_size, seq_length, num_heads, head_dim) 
       output = output.contiguous().view(batch_size, seq_length, self.embed_dim) # (batch_size, seq_length, embed_dim) 
