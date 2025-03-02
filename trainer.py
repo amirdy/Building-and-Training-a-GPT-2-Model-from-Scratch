@@ -52,7 +52,7 @@ class Trainer:
             X, y = X.to(self.device), y.to(self.device)            
             
             # Forward pass
-            with torch.autocast(device_type=self.device, dtype=torch.bfloat16): # Use bfloat16 for faster computation
+            with torch.autocast(device_type=str(self.device), dtype=torch.bfloat16): # Use bfloat16 for faster computation
                 pred = self.model(X)     # (batch_size, seq_length, vocab_size)
             pred = pred.flatten(0,1)     # (batch_size x seq_length, vocab_size)
             y = y.flatten(0,1)           # (batch_size x seq_length)
@@ -85,7 +85,7 @@ class Trainer:
             
             # Forward pass
             with torch.no_grad(): # No need to track the gradients
-                with torch.autocast(device_type=self.device, dtype=torch.bfloat16): # Use bfloat16 for faster computation
+                with torch.autocast(device_type=str(self.device), dtype=torch.bfloat16): # Use bfloat16 for faster computation
                     pred = self.model(X) # (batch_size, seq_length, vocab_size)
             pred = pred.flatten(0,1)     # (batch_size x seq_length, vocab_size)
             y = y.flatten(0,1)           # (batch_size x seq_length)
