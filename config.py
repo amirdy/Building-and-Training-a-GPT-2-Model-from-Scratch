@@ -22,4 +22,4 @@ class TrainingConfig:
     max_new_token = 50
     temperature = 1
     k_top = 50 
-    grad_accumulation = 32
+    grad_accum_steps = 32

@@ -19,7 +19,7 @@ class DataModule():
         #     with open(file_path, "r", encoding="utf-8") as file:
         #         text_data = file.read()
 
-        # self.tokenizer = tiktoken.get_encoding("gpt2")
+        self.tokenizer = tiktoken.get_encoding("gpt2")
         # split_idx = int(0.9 * len(text_data))
 
         # training_set = text_data[0 : split_idx]
