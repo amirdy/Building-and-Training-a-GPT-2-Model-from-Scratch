@@ -31,16 +31,13 @@ class GPT(nn.Module):
     ## input is indexes of shape (batch_size, context_length)
     
     batch_size, context_length = input.shape
+    token_embeds = self.token_embedding(input) # (batch_size, context_length, embed_dim)
+    pos_embeds = self.pos_embedding(torch.arange(context_length, device = input.device)) # (context_length, embed_dim) 
+    x = token_embeds + pos_embeds   # (batch_size, context_length, embed_dim)
 
-    token_embeds = self.token_embedding(input)
-    pos_embeds = self.pos_embedding(torch.arange(context_length, device = input.device))
-    x = token_embeds + pos_embeds
-
-    x = self.drop_emb(x) # (batch_size, context_length, embed_dim)
-
-    x = self.trasnformer_blocks(x) # (batch_size, context_length, embed_dim)
-
+    x = self.drop_emb(x)            # (batch_size, context_length, embed_dim)
+    x = self.trasnformer_blocks(x)  # (batch_size, context_length, embed_dim)
     x = self.final_normalizatoin(x) # (batch_size, context_length, embed_dim)
-    logits = self.out_head(x) # (batch_size, context_length, vocab_size)
+    logits = self.out_head(x)       # (batch_size, context_length, vocab_size)
     
     return logits

@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from torch.nn import functional as F
 
@@ -17,9 +16,8 @@ class MHA(nn.Module):
       self.masked = mask
 
   def forward(self, input):
-      ## input: (batch_size, seq_length, embed_dim)
+      ## input:  (batch_size, seq_length, embed_dim)
       ## output: (batch_size, seq_length, embed_dim)
-
 
       batch_size, seq_length, _ = input.shape
 
@@ -35,28 +33,25 @@ class MHA(nn.Module):
       Q = Q.permute(0, 2, 1, 3)  # (batch_size, num_heads, seq_length, head_dim)
       V = V.permute(0, 2, 1, 3)  # (batch_size, num_heads, seq_length, head_dim)
 
-      d_k = torch.tensor(Q.shape[-1], dtype = torch.float32)
-      
-
-      ################### Uncomment it if you want to yse Regular Attention ###################
+      # Uncomment the following block to use regular attention instead of flash attention
       '''
+      d_k = torch.tensor(Q.shape[-1], dtype = torch.float32)
       attn_scores = Q@(K.transpose(2,3))  
       # K.transpose(2,3) : (batch_size, num_heads, seq_length, head_dim) 
-      #  attn_scores: : (batch_size, num_heads, seq_length, seq_length) 
+      # attn_scores: : (batch_size, num_heads, seq_length, seq_length) 
 
       if self.masked:
-        mask = torch.tril(torch.ones((seq_length, seq_length))).to(attn_scores.device)
-        
+        mask = torch.tril(torch.ones((seq_length, seq_length))).to(attn_scores.device)  
         attn_scores = mask * attn_scores
         attn_scores.masked_fill_(attn_scores == 0, float('-inf')) # equal to attn_scores[ attn_scores== 0] = -torch.inf
-
 
       attn_weights  = torch.softmax(attn_scores / torch.sqrt(d_k), dim = -1)
       attn_weights = self.drop(attn_weights)
       output = attn_weights@V # (batch_size, num_heads, seq_length, head_dim) 
       '''
 
-      output = F.scaled_dot_product_attention(Q, K, V, is_causal=True) # flash attention
+      # Use flash attention instead of regular attention to speed up 
+      output = F.scaled_dot_product_attention(Q, K, V, is_causal=self.masked) # flash attention
 
       output = output.permute(0, 2, 1, 3) # (batch_size, seq_length, num_heads, head_dim) 
       output = output.contiguous().view(batch_size, seq_length, self.embed_dim) # (batch_size, seq_length, embed_dim) 

@@ -13,19 +13,19 @@ class TransformerBlock(nn.Module):
     self.feed_forward = FeedForward(config.emb_dim)
 
   def forward(self, input):
-    ## input: (batch_size, seq_length, embed_dim)
+    ## input:  (batch_size, seq_length, embed_dim)
     ## output: (batch_size, seq_length, embed_dim)
 
 
     shortcut = input
     output = self.layer_nomalization_1(shortcut) # (batch_size, seq_length, embed_dim)
-    output = self.MHA(output) # (batch_size, seq_length, embed_dim)
+    output = self.MHA(output)                    # (batch_size, seq_length, embed_dim)
     output = self.drop(output)
     output = output + shortcut
 
     shortcut = output
     output = self.layer_nomalization_2(shortcut) # (batch_size, seq_length, embed_dim)
-    output = self.feed_forward(output) # (batch_size, seq_length, embed_dim)
+    output = self.feed_forward(output)           # (batch_size, seq_length, embed_dim)
     output = self.drop(output)
     output = output + shortcut
 

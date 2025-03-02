@@ -1,4 +1,3 @@
-import torch
 import torch.nn as nn
 from models.gelu import GELU
 
@@ -11,8 +10,8 @@ class FeedForward(nn.Module):
     self.fc2 = nn.Linear(4 * embed_dim, embed_dim)
 
   def forward(self, input):
-    ## input: (batch_size, seq_length, embed_dim)
-    ## output : (batch_size, seq_length, embed_dim)
+    ## input:  (batch_size, seq_length, embed_dim)
+    ## output: (batch_size, seq_length, embed_dim)
 
     output = self.fc1(input)
     output = self.GELU(output)

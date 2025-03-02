@@ -5,23 +5,34 @@ from config import GPTConfig, TrainingConfig
 from trainer import Trainer
 import time
 
+# Set the device
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-device = 'cpu'
 
+# Create the configuration objects
 gpt_config = GPTConfig()
 training_config = TrainingConfig()
 
-
+# Create the data module
 dm = DataModule(training_config.batch_size, gpt_config.context_length)
+
+# Create the data loaders
 train_dataloader = dm.train_dataloader()
 val_dataloader = dm.val_dataloader()
 
+# Enable TF32 for faster training
+torch.set_float32_matmul_precision('high') 
 
-
+# Create the GPT model
 model = GPT(gpt_config)
-model.to(device)
+model.to(device) # Move the model to the device
 
+# Compile the model for faster training
+model = torch.compile(model) 
 
+# Set the sample context
+sample_context = "Once a cat sees a dog and asks,"
+
+# Create the trainer
 trainer = Trainer(
     tokenizer = dm.tokenizer,
     train_dataloader = train_dataloader,
@@ -29,7 +40,7 @@ trainer = Trainer(
     model = model,
     config = training_config,
     device = device,
-    grad_accum_steps = 4
+    sample_context = sample_context
 )
 start_time = time.time()
 trainer.train()

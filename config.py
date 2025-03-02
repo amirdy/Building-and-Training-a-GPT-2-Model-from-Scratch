@@ -9,7 +9,7 @@ class GPTConfig:
     n_layers = 12         # Number of layers
     drop_rate = 0.1       # Dropout rate
     qkv_bias = False      # Query-key-value bias
-    weight_tying = False  # Weight tying
+    weight_tying = True  # Weight tying
 
 @dataclass
 class TrainingConfig:
@@ -22,4 +22,4 @@ class TrainingConfig:
     max_new_token = 50
     temperature = 1
     k_top = 50 
-    save_path = "."
+    grad_accumulation = 32
