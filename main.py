@@ -91,7 +91,7 @@ def main():
         device = device,
         sample_context = sample_context
     )
-
+    print('Start training')
     # Start training
     start_time = time.time()
     trainer.train()
