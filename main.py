@@ -9,8 +9,8 @@ import time
 
 
 
-# Load the tiny stories dataset
-def load_tiny_stories(max_samples = 1_000_000, train_split = 0.98):
+# Load the tiny stories dataset 1_000_000
+def load_tiny_stories(max_samples = 10000, train_split = 0.98):
     """
     Loads the TinyStories dataset and encodes it using GPT-2 tokenizer.
 
@@ -54,15 +54,12 @@ def main():
     # Set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Training on {device}.')
-    
+
     # Initialize configurations
     gpt_config = GPTConfig()
     training_config = TrainingConfig()
 
     training_config.warmup_steps = 1
-    training_config.max_lr = 0.0004
-    # training_config.top_k = 3
-    # gpt_config.context_length = 256
     training_config.batch_size = 4
 
 
