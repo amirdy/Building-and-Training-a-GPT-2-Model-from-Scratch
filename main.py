@@ -1,54 +1,101 @@
 import torch
+import tiktoken
+from datasets import load_dataset
 from models.gpt import GPT
 from dataset.data_module import DataModule
 from config import GPTConfig, TrainingConfig
 from trainer import Trainer
 import time
 
-# Set the device
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-# Create the configuration objects
-gpt_config = GPTConfig()
-training_config = TrainingConfig()
 
-# Create the data module
-dm = DataModule(training_config.batch_size, gpt_config.context_length)
+# Load the tiny stories dataset
+def load_tiny_stories(max_samples = 1_000_000, train_split = 0.98):
+    """
+    Loads the TinyStories dataset and encodes it using GPT-2 tokenizer.
 
-# Create the data loaders
-train_dataloader = dm.train_dataloader()
-val_dataloader = dm.val_dataloader()
+    Args:
+        max_samples (int): Maximum number of samples to process.
+        train_split (float): Fraction of data to use for training.
+    
+    Returns:
+        tuple: Tokenized training and validation data.
+    """
+    dataset = load_dataset("roneneldan/TinyStories", split="train")
+    enc = tiktoken.get_encoding("gpt2")
+    eot = enc._special_tokens['<|endoftext|>'] # end of text token
+    
+    tokens_train, tokens_val = [eot], [eot]
+    split_idx = int(max_samples * train_split)
 
-# Enable TF32 for faster training
-torch.set_float32_matmul_precision('high') 
 
-# Create the GPT model
-model = GPT(gpt_config)
-model.to(device) # Move the model to the device
+    for i, file in enumerate(dataset):
+        if i == max_samples:
+            break
+        text = file['text']
+        encoded_text = enc.encode_ordinary(text)
 
-# Compile the model for faster training
-model = torch.compile(model) 
+        if i < split_idx:
+            tokens_train.extend(encoded_text)
+        else:
+            tokens_val.extend(encoded_text)
+      
+    return tokens_train, tokens_val
 
-# Set the sample context
-sample_context = "Once a cat sees a dog and asks,"
 
-# Create the trainer
-trainer = Trainer(
-    tokenizer = dm.tokenizer,
-    train_dataloader = train_dataloader,
-    val_dataloader = val_dataloader,
-    model = model,
-    config = training_config,
-    device = device,
-    sample_context = sample_context
-)
-start_time = time.time()
-trainer.train()
-# end_time = time.time()
-# training_time_minutes = (end_time - start_time)/60
-# print(f'\n Training completed in {training_time_minutes:.2f} minutes.')
-# print(f' Best Epoch is {trainer.best_epoch} with validation loss {trainer.best_val_loss:.3f}')
 
+
+def main():
+    """ Main function to set up and train the GPT model. """
+    
+    # Load dataset
+    tokens_train, tokens_val = load_tiny_stories()
+
+    # Set the device
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+    # Initialize configurations
+    gpt_config = GPTConfig()
+    training_config = TrainingConfig()
+
+    # Initialize Data Module and Data Loaders
+    dm = DataModule(training_config.batch_size, gpt_config.context_length, tokens_train, tokens_val)
+    train_dataloader = dm.train_dataloader()
+    val_dataloader = dm.val_dataloader()
+
+    # Enable TF32 for faster training on Ampere GPUs
+    torch.set_float32_matmul_precision('high') 
+
+    # Create the GPT model
+    model = GPT(gpt_config)
+    model.to(device) # Move the model to the device
+
+    # Compile the model for faster training
+    model = torch.compile(model) 
+
+    # Set the sample context
+    sample_context = "Once a cat sees a dog and asks,"
+
+    # Create the trainer
+    trainer = Trainer(
+        tokenizer = dm.tokenizer,
+        train_dataloader = train_dataloader,
+        val_dataloader = val_dataloader,
+        model = model,
+        config = training_config,
+        device = device,
+        sample_context = sample_context
+    )
+
+    # Start training
+    start_time = time.time()
+    trainer.train()
+    end_time = time.time()
+    training_time_minutes = (end_time - start_time)/60
+    print(f'\n Training completed in {training_time_minutes:.2f} minutes.')
+
+if __name__ == "__main__":
+    main()
 
 ### in GP2 positional embedding are just parapmeters and trained from scratch like other parameters
 ### GPT 2 is a deoder only transformer

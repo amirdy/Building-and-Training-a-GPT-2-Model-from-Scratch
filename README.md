@@ -1,6 +1,6 @@
-# Building/Training a GPT-2 model from Scratch
+# Building and Training a GPT-2 Model from Scratch
 
-Welcome to the GPT-2 from Scratch project! This repository contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch.
+This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
 
 ## Setup
 
@@ -158,3 +158,8 @@ We would like to extend our gratitude to the following resources and individuals
 - **PyTorch**: For their [deep learning framework](https://pytorch.org/), which served as the backbone for building and training our model.
 
 We are grateful for the contributions of these resources and individuals, which have been invaluable to the success of this project.
+
+## References
+
+- Radford, Alec, et al. "Language Models are Unsupervised Multitask Learners." OpenAI Blog (2019). [GPT-2 Paper](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
+- Brown, Tom, et al. "Language Models are Few-Shot Learners." Advances in Neural Information Processing Systems 33 (2020). [GPT-3 Paper](https://arxiv.org/abs/2005.14165)

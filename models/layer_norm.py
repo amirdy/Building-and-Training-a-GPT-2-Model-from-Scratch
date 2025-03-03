@@ -8,8 +8,6 @@ class LayerNorm(nn.Module):
     self.scale = nn.Parameter(torch.ones(embed_dim))
     self.shift = nn.Parameter(torch.zeros(embed_dim))
 
-    # self.scale = nn.Parameter(torch.ones(1, 1, embed_dim))
-    # self.shift = nn.Parameter(torch.zeros(1, 1, embed_dim))
   def forward(self, input):
     ## input:  (batch_size, seq_length, embed_dim)
     ## output: (batch_size, seq_length, embed_dim)

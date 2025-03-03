@@ -6,6 +6,7 @@ import math
 from pathlib import Path  
 
 class Trainer:
+    """ Trainer class for training and evaluating a GPT model. """
     def __init__(self, tokenizer, train_dataloader, val_dataloader, model, config,  device, sample_context):
         self.tokenizer = tokenizer
         self.train_dataloader = train_dataloader
@@ -13,16 +14,16 @@ class Trainer:
         self.val_dataloader = val_dataloader
         self.model = model
         self.config = config
-        self.criterion = nn.CrossEntropyLoss()
-        self.optimizer = self.configure_optimizer()
         self.device = device
+        self.sample_context = sample_context
+        self.criterion = nn.CrossEntropyLoss()
+        self.optimizer = self._configure_optimizer()
         self.grad_accum_steps = config.grad_accum_steps
         self.best_val_loss = float('inf')
         self.best_step = 0
         self.train_losses = []
         self.val_losses = []
-        self.checkpoint_dir = Path(".") / 'ckpt'
-        self.sample_context = sample_context
+        self.checkpoint_dir = Path("ckpt")
         self._prepare_checkpoint_dir()
 
     def _prepare_checkpoint_dir(self):
@@ -33,7 +34,7 @@ class Trainer:
         except FileExistsError:
             print(f"The checkpoint directory ({self.checkpoint_dir}) already exists.")
 
-    def get_batch(self):
+    def _get_batch(self):
         """ Get a batch of data from the training dataloader. """
         try:  
             return next(self.iter_train_dataloader)
@@ -41,8 +42,9 @@ class Trainer:
             self.iter_train_dataloader = iter(self.train_dataloader)
             return next(self.iter_train_dataloader)
         
-    def train_step(self, current_step):
+    def _train_step(self, current_step):
         """ Perform a single training step. """
+        self.model.train()
         loss_accum = 0
         # Zero the gradients
         self.optimizer.zero_grad()
@@ -58,8 +60,7 @@ class Trainer:
             y = y.flatten(0,1)           # (batch_size x seq_length)
     
             # Calculate loss
-            loss = self.criterion(pred, y)
-            loss = loss / self.grad_accum_steps
+            loss = self.criterion(pred, y) / self.grad_accum_steps
             loss_accum += loss.item()
             loss.backward()
 
@@ -67,7 +68,7 @@ class Trainer:
         torch.nn.utils.clip_grad_norm_(self.model.parameters(), 1.0)
  
         # Update learning rate
-        lr = self.get_lr(current_step)
+        lr = self._get_lr(current_step)
         for param_group in self.optimizer.param_groups:
                 param_group['lr'] = lr
 
@@ -77,8 +78,9 @@ class Trainer:
         return loss_accum, lr
 
 
-    def evaluate(self):
+    def _evaluate(self):
         """ Evaluate the model on the validation set. """
+        self.model.eval()
         losses= []
         for X, y in self.val_dataloader:
             X, y = X.to(self.device), y.to(self.device) # X: (bath_size, seq_length)   y: (bath_size, seq_length)
@@ -96,11 +98,11 @@ class Trainer:
         return val_loss
 
 
-    def log_results(self, step, train_loss, val_loss, training_time, lr):
+    def _log_results(self, step, train_loss, val_loss, training_time, lr):
         """ Log the training results. """
-        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f} | lr {lr:.4f} | {training_time:.2f}s ')
+        print(f'Step {step}: train loss {train_loss:.4f}, val loss {val_loss:.4f} | lr: {lr:.4f} | {training_time:.2f}s ')
 
-    def save_checkpoint(self, step, val_loss):
+    def _save_checkpoint(self, step, val_loss):
         """ Save the model checkpoint if the validation loss has improved. """
         if val_loss < self.best_val_loss:
                 self.best_val_loss = val_loss
@@ -108,7 +110,7 @@ class Trainer:
                 model_filename = self.checkpoint_dir / f'best_model.pth'
                 torch.save(self.model.state_dict(), model_filename)
 
-    def print_sample_output(self):
+    def _print_sample_output(self):
         """ Generate and print a sample output from the model. """
         tokens = self.tokenizer.encode(self.sample_context, allowed_special={'<|endoftext|>'}) # list of indexes [3, 2, 1, ... ]
         for i in range(self.config.max_new_token):
@@ -137,7 +139,7 @@ class Trainer:
         decoded_text = self.tokenizer.decode(tokens) .replace("\n", " ")
         print(f'> {decoded_text}')
     
-    def configure_optimizer(self):
+    def _configure_optimizer(self):
         """ Configure the optimizer. """                
         # Get all trainable parameters
         param_dict = {name: p for name, p in self.model.named_parameters() if  p.requires_grad}
@@ -150,7 +152,7 @@ class Trainer:
         optmizer = torch.optim.AdamW(param_groups, lr = self.config.max_lr, betas=(0.9, 0.95), eps=1e-8)
         return optmizer
     
-    def get_lr(self, current_step):
+    def _get_lr(self, current_step):
         """ Get the learning rate for the current step based on the learning rate schedule. """
         # (warup) if the step < warmup_steps then increase the learning rate linearly
         if current_step < self.config.warmup_steps:
@@ -168,13 +170,12 @@ class Trainer:
         """ Train the model. """
         for step in range(self.config.max_steps):
             start_time = time.time()
-            self.model.train()
+            self.model._train()
             train_loss, lr = self.train_step(step)
             if step % 10 == 0: # Log the results every 10 steps
-                self.model.eval()
-                val_loss = self.evaluate()
+                val_loss = self._evaluate()
                 end_time = time.time()
                 training_time = (end_time - start_time)
-                self.log_results(step, train_loss, val_loss, training_time, lr)
-                self.save_checkpoint(step, val_loss)
-                self.print_sample_output()
+                self._log_results(step, train_loss, val_loss, training_time, lr)
+                self._save_checkpoint(step, val_loss)
+                self._print_sample_output()

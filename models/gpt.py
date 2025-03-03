@@ -4,7 +4,14 @@ from models.layer_norm import LayerNorm
 from models.transformer_block import TransformerBlock
 
 class GPT(nn.Module):
+  """ A GPT-style transformer model. """
+
   def __init__(self, config):
+    """Initializes the GPT model.
+
+    Args:
+        config: A configuration object containing model hyperparameters.
+    """
     super().__init__()
     self.token_embedding = nn.Embedding(config.vocab_size, config.emb_dim)
     self.pos_embedding = nn.Embedding(config.context_length, config.emb_dim)
@@ -20,16 +27,25 @@ class GPT(nn.Module):
     self.apply(self. _init_weights)
 
   def _init_weights(self, module):
-        if isinstance(module, nn.Linear):
-            std = 0.02
-            torch.nn.init.normal_(module.weight, mean=0.0, std=std)
-            if module.bias is not None:
-                torch.nn.init.zeros_(module.bias)
-        elif isinstance(module, nn.Embedding):
+    """Initializes model weights."""
+    if isinstance(module, nn.Linear):
+        std = 0.02
+        torch.nn.init.normal_(module.weight, mean=0.0, std=std)
+        if module.bias is not None:
+            torch.nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.Embedding):
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
   def forward(self, input):
-    ## input is indexes of shape (batch_size, context_length)
-    
+    """Forward pass of the GPT model.
+
+    Args:
+        input_tensor (torch.Tensor): Tensor of shape (batch_size, context_length)
+            containing token indices.
+
+    Returns:
+        torch.Tensor: Logits of shape (batch_size, context_length, vocab_size).
+    """
+        
     batch_size, context_length = input.shape
     token_embeds = self.token_embedding(input) # (batch_size, context_length, embed_dim)
     pos_embeds = self.pos_embedding(torch.arange(context_length, device = input.device)) # (context_length, embed_dim) 

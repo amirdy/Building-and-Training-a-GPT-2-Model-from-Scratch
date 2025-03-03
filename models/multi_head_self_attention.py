@@ -2,7 +2,17 @@ import torch.nn as nn
 from torch.nn import functional as F
 
 class MHA(nn.Module):
+  """ Multi-Head Attention (MHA) module with optional causal masking. """
+
   def __init__(self, embed_dim, num_heads, drop_rate, mask = False):
+      """ Initializes the Multi-Head Attention module.
+
+      Args:
+          embed_dim (int): Dimension of the input embeddings.
+          num_heads (int): Number of attention heads.
+          drop_rate (float): Dropout rate.
+          mask (bool, optional): Whether to apply causal masking. Defaults to False.
+      """
       super().__init__()
       self.W_query = nn.Linear(embed_dim, embed_dim, bias=False)
       self.W_key = nn.Linear(embed_dim, embed_dim, bias=False)
@@ -16,8 +26,14 @@ class MHA(nn.Module):
       self.masked = mask
 
   def forward(self, input):
-      ## input:  (batch_size, seq_length, embed_dim)
-      ## output: (batch_size, seq_length, embed_dim)
+      """Computes multi-head attention.
+
+      Args:
+          input_tensor (torch.Tensor): Input tensor of shape (batch_size, seq_length, embed_dim).
+
+      Returns:
+          torch.Tensor: Output tensor of shape (batch_size, seq_length, embed_dim).
+      """
 
       batch_size, seq_length, _ = input.shape
 
