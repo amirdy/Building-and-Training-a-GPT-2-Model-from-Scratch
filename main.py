@@ -39,7 +39,7 @@ def load_tiny_stories(max_samples = 1_000_000, train_split = 0.98):
             tokens_train.extend(encoded_text)
         else:
             tokens_val.extend(encoded_text)
-      
+    print(f'{len(tokens_train)} training tokens, {len(tokens_val)} validation tokens')
     return tokens_train, tokens_val
 
 
@@ -53,10 +53,18 @@ def main():
 
     # Set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    print(f'Training on {device}.')
+    
     # Initialize configurations
     gpt_config = GPTConfig()
     training_config = TrainingConfig()
+
+    training_config.warmup_steps = 1
+    training_config.max_lr = 0.0004
+    # training_config.top_k = 3
+    # gpt_config.context_length = 256
+    training_config.batch_size = 4
+
 
     # Initialize Data Module and Data Loaders
     dm = DataModule(training_config.batch_size, gpt_config.context_length, tokens_train, tokens_val)
