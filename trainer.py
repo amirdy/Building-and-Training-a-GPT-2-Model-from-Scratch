@@ -170,8 +170,7 @@ class Trainer:
         """ Train the model. """
         for step in range(self.config.max_steps):
             start_time = time.time()
-            self.model._train()
-            train_loss, lr = self.train_step(step)
+            train_loss, lr = self._train_step(step)
             if step % 10 == 0: # Log the results every 10 steps
                 val_loss = self._evaluate()
                 end_time = time.time()
