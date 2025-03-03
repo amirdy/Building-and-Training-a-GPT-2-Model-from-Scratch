@@ -112,13 +112,9 @@ class TrainingConfig:
 The project has the following structure:
 
 ```
-ckpt/
-config.py
 dataset/
     data_module.py
     dataset.py
-main.ipynb
-main.py
 models/
     feed_forward.py
     gelu.py
@@ -126,11 +122,14 @@ models/
     layer_norm.py
     multi_head_self_attention.py
     transformer_block.py
-README.md
+ckpt/
+config.py
 trainer.py
+main.py
+README.md
 ```
 
-- `config.py`: Contains the configuration classes for the model and training.
+
 - `dataset/`: Contains the dataset-related modules.
   - `data_module.py`: Handles data loading and preprocessing.
   - `dataset.py`: Defines the dataset class.
@@ -141,9 +140,9 @@ trainer.py
   - `layer_norm.py`: Defines the layer normalization.
   - `multi_head_self_attention.py`: Defines the multi-head self-attention mechanism.
   - `transformer_block.py`: Defines the transformer block.
-- `main.ipynb`: Jupyter notebook for interactive experimentation.
-- `main.py`: Main script for training the model.
+- `config.py`: Contains the configuration classes for the model and training.
 - `trainer.py`: Contains the training loop and related functions.
+- `main.py`: Main script for training the model.
 
 ## License
 
@@ -153,7 +152,7 @@ This project is licensed under the MIT License.
 
 We would like to extend our gratitude to the following resources and individuals who made this project possible:
 
-- **Sebastian Raschka**: Author of [Build a Large Language Model (From Scratch)](https://www.amazon.com/Build-Large-Language-Model-Scratch/dp/1633437167?crid=228R4JI0P0QFR&dib=eyJ2IjoiMSJ9.XvZyIer9iV133BWXqNiVt_OOJXZheO54dvZtQly8MC25PNYZrN3OWsGLjbg3I0G9hI3LkjwhsORxvHIob3nvCZFgdSSQEFe07VkehijGxT03n4Amdw7lnXxnsOUuWXeglfHnewCcV3DjL9zWHELfh5DG1ZErzFym3S6ZxSuFzNvoPkaq0uDlD_CKwqHdC0KM_RdvIqF0_2RudgvzRli0V155KkusHRck3pG7ybp5VyqKDC_GgL_MEywLwLhFgX6kOCgV6Rq90eTgSHFd6ac8krpIYjsHWe6H3IXbfKGvMXc.473O1-iUZC0z2hdx8L5Z5ZTNxtNV9gNPw_mE7QZ5Y90&dib_tag=se&keywords=raschka&qid=1730250834&sprefix=raschk,aps,162&sr=8-1&linkCode=sl1&tag=rasbt03-20&linkId=84ee23afbd12067e4098443718842dac&language=en_US&ref_=as_li_ss_tl), for providing valuable insights and guidance on building large language models.
+- **Sebastian Raschka**: Author of [Build a Large Language Model (From Scratch)](https://www.amazon.com/Build-Large-Language-Model-Scratch/dp/1633437167?crid=228R4JI0P0QFR&dib=eyJ2IjoiMSJ9.XvZyIer9iV133BWXqNiVt_OOJXZheO54dvZtQly8MC25PNYZrN3OWsGLjbg3I0G9hI3LkjwhsORxvHIob3nvCZFgdSSQEFe07VkehijGxT03n4Amdw7lnXxnsOUuWXeglfHnewCcV3DjL9zWHELfh5DG1ZErzFym3S6ZxSuFzNvoPkaq0uDlD_CKwqHdC0KM_RdvIqF0_2RudgvzRli0V155KkusHRck3pG7ybp5VyqKDC_GgL_MEywLwLhFgX6kOCgV6Rq90eTgSHFd6ac8krpIYjsHWe6H3IXbfKGvMXc.473O1-iUZC0z2hdx8L5Z5ZTNxtNV9gNPw_mE7QZ5Y90&dib_tag=se&keywords=raschka&qid=1730250834&sprefix=raschk,aps,162&sr=8-1&linkCode=sl1&tag=rasbt03-20&linkId=84ee23afbd12067e4098443718842dac&language=en_US&ref_=as_li_ss_tl), for providing valuable insights and guidance on building large language models. Reference: Raschka, Sebastian. Build A Large Language Model (From Scratch). Manning, 2024. ISBN: 978-1633437166.
 - **Andrej Karpathy**: For his educational YouTube videos, especially [Let's reproduce GPT-2 (124M)](https://www.youtube.com/watch?v=l8pRSuU81PU&t=12025s) and [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY), which were instrumental in understanding and implementing GPT-2.
 - **Hugging Face**: For their [Transformers library](https://github.com/huggingface/transformers), which provides pre-trained models and tokenizers that significantly accelerated our development process.
 - **PyTorch**: For their [deep learning framework](https://pytorch.org/), which served as the backbone for building and training our model.
