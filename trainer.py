@@ -30,9 +30,9 @@ class Trainer:
         """ Prepare the checkpoint directory. """
         try:
             self.checkpoint_dir.mkdir(parents=True)
-            print(f"Checkpoint directory is ready at: {self.checkpoint_dir}")
+            print(f"Checkpoint directory is ready at: {self.checkpoint_dir}...")
         except FileExistsError:
-            print(f"The checkpoint directory ({self.checkpoint_dir}) already exists.")
+            print(f"The checkpoint directory ({self.checkpoint_dir}) already exists...")
 
     def _get_batch(self):
         """ Get a batch of data from the training dataloader. """
@@ -50,7 +50,7 @@ class Trainer:
         self.optimizer.zero_grad()
 
         for _ in range(self.grad_accum_steps):
-            X, y = self.get_batch() # X: (batch_size, seq_length)   y: (batch_size, seq_length)
+            X, y = self._get_batch() # X: (batch_size, seq_length)   y: (batch_size, seq_length)
             X, y = X.to(self.device), y.to(self.device)            
             
             # Forward pass
@@ -171,7 +171,7 @@ class Trainer:
         for step in range(self.config.max_steps):
             start_time = time.time()
             train_loss, lr = self._train_step(step)
-            if step % 10 == 0: # Log the results every 10 steps
+            if step % 100 == 0: # Log the results every 10 steps
                 val_loss = self._evaluate()
                 end_time = time.time()
                 training_time = (end_time - start_time)

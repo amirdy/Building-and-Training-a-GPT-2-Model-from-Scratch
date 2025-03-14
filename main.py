@@ -53,7 +53,7 @@ def main():
 
     # Set the device
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f'Training on {device}.')
+    print(f'Training on {device}...')
 
     # Initialize configurations
     gpt_config = GPTConfig()
@@ -79,7 +79,7 @@ def main():
     model = torch.compile(model) 
 
     # Set the sample context
-    sample_context = "Once a cat sees a dog and asks,"
+    sample_context = "Once, a cat sees a dog and says, 'Hi puppy! How's life going?' "
 
     # Create the trainer
     trainer = Trainer(

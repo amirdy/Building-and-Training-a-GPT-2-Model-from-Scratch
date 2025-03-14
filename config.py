@@ -41,13 +41,13 @@ class TrainingConfig:
         k_top: Top-k sampling to filter the most probable next tokens.
         grad_accum_steps: Number of gradient accumulation steps.
     """
-    max_steps = 19073 
+    max_steps = 3000 
     warmup_steps = 715  
     max_lr = 6e-4   
     min_lr = 6e-5  # GPT-3 small   (0.1 * 6e-4)
     weight_decay = 0.1  
-    batch_size = 2 
-    max_new_token = 50
+    batch_size = 64 
+    max_new_token = 100
     temperature = 1  
     k_top = 50   
-    grad_accum_steps = 32  
+    grad_accum_steps = 8  
