@@ -9,39 +9,23 @@ import time
 
 
 
-# Load the tiny stories dataset 1_000_000
-def load_tiny_stories(max_samples = 10000, train_split = 0.98):
-    """
-    Loads the TinyStories dataset and encodes it using GPT-2 tokenizer.
+# Load the tiny stories dataset 
+def load_tiny_stories():
+    tokens_train = []
+    tokens_val = []
 
-    Args:
-        max_samples (int): Maximum number of samples to process.
-        train_split (float): Fraction of data to use for training.
-    
-    Returns:
-        tuple: Tokenized training and validation data.
-    """
-    dataset = load_dataset("roneneldan/TinyStories", split="train")
-    enc = tiktoken.get_encoding("gpt2")
-    eot = enc._special_tokens['<|endoftext|>'] # end of text token
-    
-    tokens_train, tokens_val = [eot], [eot]
-    split_idx = int(max_samples * train_split)
+    with open("train_tokens.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            # Convert each space-separated token back into an integer list and append to loaded_tokens
+            token_list = list(map(int, line.strip().split()))
+            tokens_train.extend(token_list)
 
-
-    for i, file in enumerate(dataset):
-        if i == max_samples:
-            break
-        text = file['text']
-        encoded_text = enc.encode_ordinary(text)
-
-        if i < split_idx:
-            tokens_train.extend(encoded_text)
-        else:
-            tokens_val.extend(encoded_text)
-    print(f'{len(tokens_train)} training tokens, {len(tokens_val)} validation tokens')
+    with open("val_tokens.txt", "r", encoding="utf-8") as f:
+        for line in f:
+            # Convert each space-separated token back into an integer list and append to loaded_tokens
+            token_list = list(map(int, line.strip().split()))
+            tokens_val.extend(token_list)
     return tokens_train, tokens_val
-
 
 
 
@@ -59,8 +43,8 @@ def main():
     gpt_config = GPTConfig()
     training_config = TrainingConfig()
 
-    training_config.warmup_steps = 1
-    training_config.batch_size = 4
+    # training_config.warmup_steps = 1
+    # training_config.batch_size = 4
 
 
     # Initialize Data Module and Data Loaders

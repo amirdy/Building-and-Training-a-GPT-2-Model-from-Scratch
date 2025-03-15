@@ -42,7 +42,7 @@ class TrainingConfig:
         grad_accum_steps: Number of gradient accumulation steps.
     """
     max_steps = 3000 
-    warmup_steps = 715  
+    warmup_steps =100 #715  
     max_lr = 6e-4   
     min_lr = 6e-5  # GPT-3 small   (0.1 * 6e-4)
     weight_decay = 0.1  
