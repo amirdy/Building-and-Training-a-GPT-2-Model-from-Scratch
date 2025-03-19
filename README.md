@@ -31,29 +31,51 @@ If you want to use a pretrained model for inference or fine-tuning, download or 
 python main.py
 ```
 
-## Usage
+## Usage 
 
-Once the dependencies are installed, you can load and use the GPT-2 model for text generation. Here's an example:
+### Generating Text
 
-```python
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
+Once the model is trained, you can use the `generate_outputs.py` script to generate text based on a given input prompt. The script allows you to control the randomness and diversity of the generated text using the `--temperature` and `--k_top` arguments.
 
-# Load model and tokenizer
-model_name = "path_to_your_model"
-model = GPT2LMHeadModel.from_pretrained(model_name)
-tokenizer = GPT2Tokenizer.from_pretrained(model_name)
+#### Command
 
-# Encode input text
-input_text = "Once upon a time"
-inputs = tokenizer.encode(input_text, return_tensors='pt')
-
-# Generate text
-output = model.generate(inputs, max_length=50, num_return_sequences=1)
-
-# Decode and print the result
-generated_text = tokenizer.decode(output[0], skip_special_tokens=True)
-print(generated_text)
+```bash
+python generate_outputs.py "sample_input_text" --temperature 0.7 --k_top 50
 ```
+
+#### Arguments
+
+- `sample_context` (required): The input text prompt to generate text from.
+- `--temperature` (optional): Controls the randomness of the generated text. Lower values (e.g., 0.5) make the output more deterministic, while higher values (e.g., 1.0) make it more random. Default is `0.7`.
+- `--k_top` (optional): Controls the top-k sampling for text generation. Only the top-k tokens with the highest probabilities are considered for sampling. Default is `50`.
+
+#### Example 
+
+Input:
+```
+"Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it."
+```
+
+Output:
+```
+Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it. ** But one day, Max saw a squirrel and chased after it. Tommy got angry and said, "Max, you are naughty! You should not chase squirrels!" Max looked sad and said, "I'm sorry, Tommy. I just wanted to play with you." Tommy hugged Max and said, "It's okay, Max. I forgive you. Let's play together again." And they played happily in the park. **
+```
+
+### Training the Model
+
+To train the model from scratch, use the provided `main.py` script. This script sets up the data, model, and training loop:
+
+```bash
+python main.py
+```
+
+The training script will save the best model checkpoint in the `ckpt/` directory, which can later be used for text generation.
+
+### Notes
+
+- Ensure that the `requirements.txt` dependencies are installed before running the scripts.
+- The `generate_outputs.py` script requires the trained model checkpoint (`best_model.pth`) to be present in the `ckpt/` directory.
+- Adjust the `config.py` file to modify model and training configurations as needed.
 
 ## Training
 
@@ -128,7 +150,6 @@ trainer.py
 main.py
 README.md
 ```
-
 
 - `dataset/`: Contains the dataset-related modules.
   - `data_module.py`: Handles data loading and preprocessing.
