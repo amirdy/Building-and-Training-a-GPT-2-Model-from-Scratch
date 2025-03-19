@@ -5,14 +5,14 @@ from models.gpt import GPT
 from config import GPTConfig
 
 
-device = 'cuda'
-tokenizer = tiktoken.get_encoding("gpt2")
-gpt_config = GPTConfig()
+device = 'cuda' # set the device 
+tokenizer = tiktoken.get_encoding("gpt2") # Initialize the tokenizer
+gpt_config = GPTConfig() # Initialize the GPT config
 
 torch.set_float32_matmul_precision('high') 
 
-# Create the GPT model
-model = GPT(gpt_config)
+
+model = GPT(gpt_config) # Create the GPT model
 model.to(device) # Move the model to the devic
 model = torch.compile(model) # Compile it
 
@@ -20,13 +20,12 @@ model = torch.compile(model) # Compile it
 state_dict = torch.load("./ckpt/best_model.pth", weights_only=True) 
 model.load_state_dict(state_dict)
 
-# Switch a model to evaluation mode
+# Switch the model to evaluation mode
 model.eval()
 
 def generate_text(sample_context, temperature=0.7, k_top=50):
     """ Generate text from a given prompt using the trained model. """
-    print(sample_context, n, temperature, k_top)
-    completion = []
+
     tokens = tokenizer.encode(sample_context, allowed_special={'<|endoftext|>'})
     while True:
             tokens_tensor = torch.tensor(tokens).unsqueeze(0).to(device)
@@ -50,21 +49,20 @@ def generate_text(sample_context, temperature=0.7, k_top=50):
                 # Sample the next token based on the probability distribution
                 next_token = torch.multinomial(probs, num_samples=1)
 
-                if next_token == 50256: # if the next token is <|endoftext|>, stop generating
-                    completion.append(tokens)                
+                if next_token == 50256: # If the next token is <|endoftext|>, stop generating
                     break
                 
                 tokens = tokens + [next_token.item()]
 
-    for item in completion:
-        decoded_text = tokenizer.decode(item).replace("\n", " ")
-        print(f'> {decoded_text}')
+    
+    decoded_text = tokenizer.decode(tokens).replace("\n", " ")
+    print(f'> {decoded_text}')
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Generate text using a trained model.")
     parser.add_argument("sample_context", type=str, help="Input sentence to generate text from")
-    parser.add_argument("--temperature", type=float, help="Sampling temperature")
-    parser.add_argument("--k_top", type=int, help="Top-p nucleus sampling")
+    parser.add_argument("--temperature", type=float, default=0.7, help="Sampling temperature")
+    parser.add_argument("--k_top", type=int, default=50, help="Number of top probable tokens to consider")
     args = parser.parse_args()
     generate_text(args.sample_context, args.n, args.temperature, args.k_top)
 
