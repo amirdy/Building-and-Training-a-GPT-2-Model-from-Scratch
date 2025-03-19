@@ -17,13 +17,13 @@ model.to(device) # Move the model to the devic
 model = torch.compile(model) # Compile it
 
 # Load the best model
-state_dict = torch.load("best_model.pth", weights_only=True) 
+state_dict = torch.load("./ckpt/best_model.pth", weights_only=True) 
 model.load_state_dict(state_dict)
 
 # Switch a model to evaluation mode
 model.eval()
 
-def generate_text(sample_context, n=5, temperature=0.7, k_top=50):
+def generate_text(sample_context, temperature=0.7, k_top=50):
     """ Generate text from a given prompt using the trained model. """
     print(sample_context, n, temperature, k_top)
     completion = []
