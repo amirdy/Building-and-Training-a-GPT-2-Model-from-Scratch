@@ -1,6 +1,4 @@
 import torch
-import tiktoken
-from datasets import load_dataset
 from models.gpt import GPT
 from dataset.data_module import DataModule
 from config import GPTConfig, TrainingConfig
@@ -42,9 +40,6 @@ def main():
     # Initialize configurations
     gpt_config = GPTConfig()
     training_config = TrainingConfig()
-
-    # training_config.warmup_steps = 1
-    # training_config.batch_size = 4
 
 
     # Initialize Data Module and Data Loaders
