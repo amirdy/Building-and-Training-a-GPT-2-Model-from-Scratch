@@ -1,6 +1,6 @@
 # Building and Training a GPT-2 Model from Scratch
 
-This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). This GPT2 model has 124M parameters. See [this file ](./overview.pdf) to better understand the project. Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
+This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). This GPT2 model has 124M parameters. See [this file ](./Overview.pdf) to better understand the project. Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
 
 ## Setup
 
