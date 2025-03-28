@@ -1,6 +1,6 @@
 # Building and Training a GPT-2 Model from Scratch
 
-This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
+This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). This GPT2 model has 124M parameters. See [this file ](./overview.pdf) to better understand the project. Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
 
 ## Setup
 
@@ -75,6 +75,8 @@ The training script will save the best model checkpoint in the `ckpt/` directory
 - Adjust the `config.py` file to modify model and training configurations as needed.
 
 ## Training
+
+The *TinyStories* dataset (see the [References](#References) section), consisting of short and simple stories, was used for training. 
 
 To train the model from scratch, use the provided `main.py` script. This script sets up the data, model, and training loop:
 
@@ -174,12 +176,10 @@ We would like to extend our gratitude to the following resources and individuals
 
 - **Sebastian Raschka**: Author of [Build a Large Language Model (From Scratch)](https://www.amazon.com/Build-Large-Language-Model-Scratch/dp/1633437167?crid=228R4JI0P0QFR&dib=eyJ2IjoiMSJ9.XvZyIer9iV133BWXqNiVt_OOJXZheO54dvZtQly8MC25PNYZrN3OWsGLjbg3I0G9hI3LkjwhsORxvHIob3nvCZFgdSSQEFe07VkehijGxT03n4Amdw7lnXxnsOUuWXeglfHnewCcV3DjL9zWHELfh5DG1ZErzFym3S6ZxSuFzNvoPkaq0uDlD_CKwqHdC0KM_RdvIqF0_2RudgvzRli0V155KkusHRck3pG7ybp5VyqKDC_GgL_MEywLwLhFgX6kOCgV6Rq90eTgSHFd6ac8krpIYjsHWe6H3IXbfKGvMXc.473O1-iUZC0z2hdx8L5Z5ZTNxtNV9gNPw_mE7QZ5Y90&dib_tag=se&keywords=raschka&qid=1730250834&sprefix=raschk,aps,162&sr=8-1&linkCode=sl1&tag=rasbt03-20&linkId=84ee23afbd12067e4098443718842dac&language=en_US&ref_=as_li_ss_tl), for providing valuable insights and guidance on building large language models. Reference: Raschka, Sebastian. Build A Large Language Model (From Scratch). Manning, 2024. ISBN: 978-1633437166.
 - **Andrej Karpathy**: For his educational YouTube videos, especially [Let's reproduce GPT-2 (124M)](https://www.youtube.com/watch?v=l8pRSuU81PU&t=12025s) and [Let's build GPT: from scratch, in code, spelled out](https://www.youtube.com/watch?v=kCc8FmEb1nY), which were instrumental in understanding and implementing GPT-2.
-- **Hugging Face**: For their [Transformers library](https://github.com/huggingface/transformers), which provides pre-trained models and tokenizers that significantly accelerated our development process.
-- **PyTorch**: For their [deep learning framework](https://pytorch.org/), which served as the backbone for building and training our model.
 
-We are grateful for the contributions of these resources and individuals, which have been invaluable to the success of this project.
 
 ## References
 
 - Radford, Alec, et al. "Language Models are Unsupervised Multitask Learners." OpenAI Blog (2019). [GPT-2 Paper](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf)
 - Brown, Tom, et al. "Language Models are Few-Shot Learners." Advances in Neural Information Processing Systems 33 (2020). [GPT-3 Paper](https://arxiv.org/abs/2005.14165)
+- Eldan, Ronen, and Yuanzhi Li. "Tinystories: How small can language models be and still speak coherent english?." arXiv preprint arXiv:2305.07759 (2023).
