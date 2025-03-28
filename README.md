@@ -45,17 +45,17 @@ python generate_outputs.py "sample_input_text" --temperature 0.7 --k_top 50
 
 #### Arguments
 
-- `sample_context` (required): The input text prompt to generate text from.
-- `--temperature` (optional): Controls the randomness of the generated text. Lower values (e.g., 0.5) make the output more deterministic, while higher values (e.g., 1.0) make it more random. Default is `0.7`.
-- `--k_top` (optional): Controls the top-k sampling for text generation. Only the top-k tokens with the highest probabilities are considered for sampling. Default is `50`.
+- `sample_context`: The input text prompt to generate text from.
+- `--temperature`: Controls the randomness of the generated text. Lower values (e.g., 0.5) make the output more deterministic, while higher values (e.g., 1.0) make it more random. Default is `0.7`.
+- `--k_top`: Controls the top-k sampling for text generation. Only the top-k tokens with the highest probabilities are considered for sampling. Default is `50`.
 
 #### Example 
 
-Input:  
+**Input:**
 *"Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it."*
 
-Output:  
-*Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it. **But one day, Max saw a squirrel and chased after it. Tommy got angry and said, "Max, you are naughty! You should not chase squirrels!" Max looked sad and said, "I'm sorry, Tommy. I just wanted to play with you." Tommy hugged Max and said, "It's okay, Max. I forgive you. Let's play together again." And they played happily in the park.***  
+**Output:** 
+*"Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it. <u>**But one day, Max saw a squirrel and chased after it. Tommy got angry and said, "Max, you are naughty! You should not chase squirrels!" Max looked sad and said, "I'm sorry, Tommy. I just wanted to play with you." Tommy hugged Max and said, "It's okay, Max. I forgive you. Let's play together again." And they played happily in the park.</u>"***  
 
 ### Training the Model
 
@@ -81,15 +81,14 @@ To train the model from scratch, use the provided `main.py` script. This script 
 python main.py
 ```
 
-### Training Notes
+### Notes
 
 - **Positional Embeddings**: In GPT-2, positional embeddings are trained from scratch like other parameters.
+- **Bias**: GPT 2 uses no bias for the final projection.
 - **Architecture**: GPT-2 is a decoder-only transformer and uses no bias for the final projection.
 - **Normalization**: In GPT-2, normalization is applied before the attention mechanism.
 - **GELU Activation**: GPT-2 uses the tanh approximation for the GELU activation function.
-- **Attention Masking**: Use `att.masked_fill` for attention masking.
-- **Weight Initialization**: Proper weight initialization is crucial. For example, the embedding layers should not be initialized with a uniform distribution.
-
+- **Weight Initialization**: Proper weight initialization is crucial. For example, the embedding layers are better be initialized with a uniform distribution.
 ## Configuration
 
 The model and training configurations are defined in the [`config.py`](config.py) file. You can adjust the hyperparameters and other settings as needed.

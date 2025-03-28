@@ -34,7 +34,7 @@ class GPT(nn.Module):
         if module.bias is not None:
             torch.nn.init.zeros_(module.bias)
     elif isinstance(module, nn.Embedding):
-            torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
+            torch.nn.init.normal_(module.weight, mean=0.0, std=std)
   def forward(self, input):
     """Forward pass of the GPT model.
 
