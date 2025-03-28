@@ -98,7 +98,6 @@ python generate_outputs.py "sample_input_text" --temperature 0.7 --k_top 50
 
 - Ensure that the `requirements.txt` dependencies are installed before running the scripts.
 - The `generate_outputs.py` script requires the trained model checkpoint (`best_model.pth`) to be present in the `ckpt/` directory.
-- Adjust the `config.py` file to modify model and training configurations as needed.
 
 ## Notes
 
@@ -133,6 +132,7 @@ trainer.py
 main.py
 generate_outputs.py
 generate_tokens.py
+Overview.pdf
 README.md
 ```
 
@@ -148,6 +148,7 @@ README.md
   - `transformer_block.py`: Defines the transformer block.
 - `generate_outputs.py`: Script for generating text from a trained model.
 - `generate_tokens.py`: Script for generating raw token sequences from the dataset.
+- `Overview.pdf`: A document providing a high-level overview of the project and its components.
 - `config.py`: Contains the configuration classes for the model and training.
 - `trainer.py`: Contains the training loop and related functions.
 - `main.py`: Main script for training the model.
