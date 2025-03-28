@@ -1,6 +1,6 @@
 # Building and Training a GPT-2 Model from Scratch
 
-This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). This GPT2 model has 124M parameters. See [this file ](./Overview.pdf) to better understand the project. Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
+This project contains all the necessary code and instructions to build, train, and use a GPT-2 model from scratch. While some of the training hyperparameters used in the GPT-2 paper are not explicitly stated, this project uses configurations inspired by GPT-3 (see the [References](#References) section). This GPT-2 model has 124M parameters. See [this file ](./Overview.pdf) to better understand the project. Additionally, this project wouldn't have been possible without the resources listed in the [Acknowledgements](#Acknowledgements) section.
 
 ## Setup
 
@@ -104,11 +104,11 @@ python generate_outputs.py "sample_input_text" --temperature 0.7 --k_top 50
 - **Dataset**: The *TinyStories* dataset (see the [References](#References) section), consisting of short and simple stories, was used for training. 
 
 - **Positional Embeddings**: In GPT-2, positional embeddings are trained from scratch like other parameters.
-- **Bias**: GPT 2 uses no bias for the final projection.
+- **Bias**: GPT-2 uses no bias for the final projection.
 - **Architecture**: GPT-2 is a decoder-only transformer and uses no bias for the final projection.
 - **Normalization**: In GPT-2, normalization is applied before the attention mechanism.
 - **GELU Activation**: GPT-2 uses the tanh approximation for the GELU activation function.
-- **Weight Initialization**: Proper weight initialization is crucial. For example, the embedding layers are better be initialized with a uniform distribution.
+- **Weight Initialization**: Proper weight initialization is crucial. For example, the embedding layers are better not initialized with a uniform distribution.
 
 
 ## Repository Structure
