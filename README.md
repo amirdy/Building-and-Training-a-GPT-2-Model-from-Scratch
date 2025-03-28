@@ -116,17 +116,16 @@ class GPTConfig:
 
 @dataclass
 class TrainingConfig:
-    max_steps = 19073 
-    warmup_steps = 715
-    max_lr = 6e-4  # GPT-3 small 
-    min_lr = 6e-5  # GPT-3 small   (0.1 * 6e-4)
-    weight_decay = 0.1
-
-    batch_size = 2 
-    max_new_token = 50
-    temperature = 1
-    k_top = 50 
-    save_path = "."
+    max_steps = 3000 
+    warmup_steps =100 # 715  
+    max_lr = 6e-4   
+    min_lr = 6e-5  
+    weight_decay = 0.1  
+    batch_size = 64 
+    max_new_token = 100
+    temperature = 1  
+    k_top = 50   
+    grad_accum_steps = 8 
 ```
 
 ## Repository Structure
@@ -148,6 +147,8 @@ ckpt/
 config.py
 trainer.py
 main.py
+generate_outputs.py
+generate_tokens.py
 README.md
 ```
 
@@ -161,6 +162,8 @@ README.md
   - `layer_norm.py`: Defines the layer normalization.
   - `multi_head_self_attention.py`: Defines the multi-head self-attention mechanism.
   - `transformer_block.py`: Defines the transformer block.
+- `generate_outputs.py`: Script for generating text from a trained model.
+- `generate_tokens.py`: Script for generating raw token sequences from the dataset.
 - `config.py`: Contains the configuration classes for the model and training.
 - `trainer.py`: Contains the training loop and related functions.
 - `main.py`: Main script for training the model.
