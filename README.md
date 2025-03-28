@@ -20,6 +20,7 @@ cd Building-a-GPT-based-LLM-from-Scratch
 Install the required Python packages using `pip`:
 
 ```bash
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 ```
 
