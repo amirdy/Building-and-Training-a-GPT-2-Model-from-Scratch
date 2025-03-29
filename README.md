@@ -89,10 +89,10 @@ python generate_outputs.py "sample_input_text" --temperature 0.7 --k_top 50
 #### Example 
 
 **sample_input_text:**
-*'Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it.'*
+*Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it.*
 
 **Output:** 
-*'Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it. <u>**But one day, Max saw a squirrel and chased after it. Tommy got angry and said, "Max, you are naughty! You should not chase squirrels!" Max looked sad and said, "I'm sorry, Tommy. I just wanted to play with you." Tommy hugged Max and said, "It's okay, Max. I forgive you. Let's play together again." And they played happily in the park.</u>'***  
+*Tommy had a little puppy named Max. Every day, they went to the park to play. Tommy threw a ball, and Max ran to get it. <u>**But one day, Max saw a squirrel and chased after it. Tommy got angry and said, "Max, you are naughty! You should not chase squirrels!" Max looked sad and said, "I'm sorry, Tommy. I just wanted to play with you." Tommy hugged Max and said, "It's okay, Max. I forgive you. Let's play together again." And they played happily in the park.</u>***  
 
 
 
