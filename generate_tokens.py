@@ -33,7 +33,7 @@ def save_tokens(output_file, split):
 
               batch.clear()  
               
-  print(f"✅ Collected {token_count} tokens for the {split} set and saved to {output_file}")
+  print(f"Collected {token_count} tokens for the {split} set and saved to {output_file}")
 
 save_tokens("train_tokens.txt", 'train')
 save_tokens("val_tokens.txt", 'validation')
