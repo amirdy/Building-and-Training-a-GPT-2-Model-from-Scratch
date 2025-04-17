@@ -69,6 +69,7 @@ class TrainingConfig:
 ```
 ## Results
 The model was trained on 1×A100 SXM GPU for 3000 steps, which took approximately 3 hours and 45 minutes. Below are the training and validation losses recorded during these steps:
+
 <img src="result_.png" alt="Train/Validation Loss" width="400" height="300">
 
 
